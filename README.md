@@ -1,37 +1,21 @@
-<p align="center">
-  <img src="./logo.png" alt="Light Cloud" width="200" />
-</p>
+# WordPress
 
-<h1 align="center">WordPress Boilerplate</h1>
-
-<p align="center">
-  A WordPress site — bring your own MySQL database — ready to deploy on Light Cloud.
-</p>
-
----
-
-## Features
-
-- Your `wp-content` in git — a small starter theme to begin with
-- WordPress core comes from the official image at build time, so there is no core to keep updated in git
-- `WP_HOME` and `WP_SITEURL` follow the host of the request, so the generated subdomain and a custom domain added later both serve the same site
-- HTTPS detected from the proxy's forwarded scheme, which is what stops the redirect loop a WordPress site behind a load balancer otherwise falls into
-
-## Local Development
-
-WordPress core is supplied by the image, so there is nothing to run locally without a
-MySQL database. Edit the theme in `wp-content/themes/lightcloud` and deploy:
+Your WordPress site. The repository holds only what is yours — `wp-content` —
+and WordPress core comes from the official image at build time, so there is no
+core to keep updated here.
 
 ```text
 wp-content/
   themes/
-    lightcloud/     # yours to edit
+    lightcloud/     # the active theme — yours to edit
+  plugins/          # commit plugins here so they are part of the image
 ```
 
-## Point it at a database
+## Database
 
-WordPress needs MySQL, and the database is yours to create: make one in the
-console, then set these on the application. Nothing is wired up for you.
+The site reads its MySQL connection from environment variables on the
+application — set automatically when the database was created with the site,
+editable in the environment's settings:
 
 | Variable | Value |
 |----------|-------|
@@ -41,61 +25,17 @@ console, then set these on the application. Nothing is wired up for you.
 | `WORDPRESS_DB_PASSWORD` | password |
 | `WORDPRESS_TABLE_PREFIX` | optional, defaults to `wp_` |
 
-The first request then takes you to the WordPress installer.
+Connections are encrypted by default; set `WORDPRESS_DB_SSL=off` only for an
+external database that cannot speak TLS.
 
-## What it does not handle
+The first request after connecting opens the WordPress installer.
 
-The container filesystem does not survive a restart. Media uploaded through the
-admin, and plugins installed through it, will disappear — put uploads in an
-offsite store (S3, GCS or similar, via a plugin) and commit plugins to
-`wp-content/plugins` so they are part of the image.
+## Good to know
 
-## Deploy to Light Cloud
-
-### 1. Create an Account
-
-Visit [console.light-cloud.com](https://console.light-cloud.com) and sign up with GitHub or Google.
-
-### 2. Create New Application
-
-1. Click **"New Application"** in the dashboard
-2. Select **"Container"** as the deployment type
-3. Choose **"WordPress"** as the framework
-
-### 3. Connect Repository
-
-- **Option A:** Fork this repository and connect it via GitHub
-- **Option B:** Push this code to your own GitHub repository and connect it
-
-### 4. Configure Settings
-
-Light Cloud will auto-detect your settings, but you can verify:
-
-| Setting | Value |
-|---------|-------|
-| Port | `8080` |
-| Dockerfile | Auto-detected |
-
-### 5. Deploy
-
-Click **"Deploy"** and your site will be live in minutes!
-
-Your site will be available at `https://your-app.light-cloud.io`
-
-## Learn More
-
-- [WordPress documentation](https://developer.wordpress.org/)
-- [Theme handbook](https://developer.wordpress.org/themes/)
-- [Light Cloud documentation](https://docs.light-cloud.com)
-
----
-
-<p align="center">
-  <a href="https://light-cloud.com">Website</a> •
-  <a href="https://docs.light-cloud.com">Documentation</a> •
-  <a href="https://console.light-cloud.com">Console</a>
-</p>
-
-<p align="center">
-  Made with ☁️ by <a href="https://light-cloud.com">Light Cloud</a>
-</p>
+- `WP_HOME`/`WP_SITEURL` follow the request host, so the generated subdomain
+  and a custom domain added later both serve the same site.
+- The container filesystem does not survive a restart: media uploaded through
+  the admin disappears — use an offsite store (S3, GCS or similar, via a
+  plugin) — and plugins installed through the admin do too, so commit them to
+  `wp-content/plugins` instead.
+- Every push to the default branch deploys automatically.
