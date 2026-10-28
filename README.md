@@ -1,5 +1,7 @@
 # WordPress
 
+[![Deploy to Light Cloud](https://light-cloud.com/button.svg)](https://console.light-cloud.com/new?repo=https://github.com/light-cloud-com/starter-wordpress)
+
 Your WordPress site. The repository holds only what is yours — `wp-content` —
 and WordPress core comes from the official image at build time, so there is no
 core to keep updated here.
